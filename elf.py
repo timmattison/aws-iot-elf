@@ -206,7 +206,10 @@ class ElfThread(threading.Thread):
         self.thing_name = thing_name
         self.thing = thing
         self.root_cert = cli.root_cert
-        self.topic = cli.topic # do not append thing name to topic for shadow update 
+        if (cli.append_thing_name):
+            self.topic = '{0}/{1}'.format(cli.topic, self.thing_name)
+        else:
+            self.topic = cli.topic  # do not append thing name to topic for shadow update
 
         self.region = cli.region
         self.cfg = cfg
@@ -630,6 +633,8 @@ if __name__ == '__main__':
                       help="The root certificate for the credentials")
     send.add_argument('--topic', dest='topic', default=DEFAULT_TOPIC,
                       help='The topic to which the message will be sent.')
+    send.add_argument('--append-thing-name', dest='append_thing_name', default=False,
+                      help='Include the thing name in the topic.')
     send.add_argument(
         '--duration', dest='duration', type=int, default=10,
         help='The messages will be sent once a second for <duration> seconds.')
@@ -647,6 +652,8 @@ if __name__ == '__main__':
         help="The root certificate for the credentials")
     subs.add_argument('--topic', dest='topic', default=DEFAULT_TOPIC,
                       help='The topic on which to subscribe.')
+    subs.add_argument('--append-thing-name', dest='append_thing_name', default=False,
+                      help='Include the thing name in the topic.')
     subs.add_argument(
         '--duration', dest='duration', type=int, default=10,
         help='The subscription will listen on the topic for <duration> seconds.')
